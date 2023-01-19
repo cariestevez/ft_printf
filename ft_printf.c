@@ -13,14 +13,16 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 //#include "libft.h"
 
-int		unsigned_printf(unsigned int n);
-char	*ft_strchr(const char *s, int c);
-int		putnbr_printf(int n);
-int		putstr_printf(char *s);
-int		putchar_printf(char c);
-int		type_print(const char *c, va_list arg);
+char 		*hex_tolower(char *s);
+char		*convert(unsigned num, int base, const char *c);
+char		*ft_strchr(const char *s, int c);
+int			putnbr_printf(int n, const char *c);
+int			putstr_printf(char *s);
+int			putchar_printf(char c);
+int			type_print(const char *c, va_list arg);
 
 int	ft_printf(const char *format, ...)
 {
@@ -37,11 +39,17 @@ int	ft_printf(const char *format, ...)
 	va_start(arg_list, format);
 //no need to get the next arg for now, just iterate the 1st str
 //to print it + the other args (if there)
+//where to check if the arg_list is empty or not corresponding type??!!
+/*ft_printf.c:214:32: error: more '%' conversions than data arguments [-Werror,-Wformat]
+        printf("to be:Something like %X\n");*/
 	while (format[i] != 0)
 	{
-		type_ptr = ft_strchr("cspdiuxX%", format[i + 1]);
-		if (format[i] == '%' && type_ptr != 0)
+//allocate memory for this ptr storing one char?
+		if (format[i] == '%')
 		{
+			type_ptr = ft_strchr("cspdiuxX%", format[i + 1]);
+			if (type_ptr == 0)
+				return (0);
 			len += type_print(type_ptr, arg_list);
 			i++;
 		}
@@ -58,13 +66,16 @@ int	ft_printf(const char *format, ...)
 
 int	type_print(const char *c, va_list arg_list)
 {
-	int	len;
+	int		len;
+	char	*converted;
 //va_arg dereferences the ptr-->to get access to the value inside
 //of the variable it points to, and advances the pointer automatically
 //each time we call it to skip past that argument. How? no idea
 //as arg we give the list of args in which to iterate and the type we
 //want it to return??
 	len = 0;
+	if (arg_list == 0)
+		return (0);
 	if (*c == '%')
 		len += write(1, "%", 1);
 	if (*c == 'c')
@@ -75,20 +86,16 @@ int	type_print(const char *c, va_list arg_list)
 //with printf both can be printed the same way, but with scanf they
 //have to be treated different
 	if (*c == 'd' || *c == 'i')
-		len = putnbr_printf(va_arg(arg_list, int));
+		len = putnbr_printf(va_arg(arg_list, int), c);
 	if (*c == 'u')
-		len = unsigned_printf(va_arg(arg_list, unsigned int));
-/*	if (c == 'x')
+		len = putnbr_printf(va_arg(arg_list, unsigned int), c);
+	if (*c == 'x' || *c == 'X')
 	{
-
+		converted = convert(va_arg(arg_list, unsigned int), 16, c);
+		len = putstr_printf(converted);
 	}
-	if (c == 'X')
+/*	if (c == 'p')
 	{
-
-	}
-	if (c == 'p')
-	{
-
 	}*/
 	return (len);
 }
@@ -132,46 +139,79 @@ int	putstr_printf(char *s)
 	return (len);
 }
 
-int	putnbr_printf(int n)
+int	putnbr_printf(int n, const char *c)
 {
 	int	putme;
 	int	len;
 
 	len = 0;
-	if (n == -2147483648)
+	if (n == -2147483648 && *c != 'u')
 		len = write (1, "-2147483648", 11);
 	else
 	{
-		if (n < 0)
+		if (n < 0 && *c != 'u')
 		{
 			n *= -1;
 			len += write (1, "-", 1);
 		}
 		if (n > 9)
-			putnbr_printf(n / 10);
+			putnbr_printf(n / 10, c);
 		putme = n % 10 + '0';
 		len += write(1, &putme, 1);
 	}
 	return (len);
 }
 
-int	unsigned_printf(unsigned int n)
+char* convert(unsigned num, int base, const char *c)
 {
-	int	putme;
-	int	len;
+	char	str[] = "0123456789ABCDEF";
+	char	*ptr;
+	int		temp;
+	int		i;
 
-	len = 0;
-	if (n > 9)
-		putnbr_printf(n / 10);
-	putme = n % 10 + '0';
-	len += write(1, &putme, 1);
-	return (len);
+	temp = num;
+	i = 0;
+	if (temp == 0)
+		i = 1;
+	while (temp != 0)
+	{
+		i++;
+		temp /= base;
+	}
+	ptr = (char *)malloc(sizeof(char) * i + 1);
+	ptr[i + 1] = '\0';
+	if (ptr == 0)
+		return (0);
+	while (num != 0)
+	{
+		ptr[i - 1]= str[num % base];
+		num /= base;
+		i--;
+	}
+	printf("what is in here?: %c", ptr[i]);
+	if (*c == 'x')
+		ptr = hex_tolower(ptr);
+	return (ptr);
 }
+
+char *hex_tolower(char *s)
+{
+    int i;
+
+    i = 0;
+    while (s[i] != 0)
+    {
+        if (s[i] > 64 && s[i] < 91)
+            s[i] += 32;
+        i++;
+    }
+    return (s);
+}
+
 
 int	main()
 {
-	ft_printf("Something like %u", -10);
-	printf("\n");
-	printf("Something like %u", -10);
+	ft_printf("Something like %X\n", 100);
+	printf("to be:Something like %X\n", 100);
 	return (0);
 }

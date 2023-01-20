@@ -6,7 +6,7 @@
 /*   By: cestevez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 12:24:01 by cestevez          #+#    #+#             */
-/*   Updated: 2023/01/14 02:27:09 by cestevez         ###   ########.fr       */
+/*   Updated: 2023/01/20 20:55:54 by cestevez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,9 @@
 #include <stdlib.h>
 //#include "libft.h"
 
-char 		*hex_tolower(char *s);
-char		*convert(unsigned num, int base, const char *c);
+char 		*tolower_printf(char *s);
+char		*hex_convert(unsigned num, int base, const char *c);
+char		*convert_address(size_t num, int base);
 char		*ft_strchr(const char *s, int c);
 int			putnbr_printf(int n, const char *c);
 int			putstr_printf(char *s);
@@ -28,51 +29,35 @@ int	ft_printf(const char *format, ...)
 {
 	va_list		arg_list;
 	char		*type_ptr;
-	int			i;
 	int			len;
+    int         i;
 
-	i = 0;
 	len = 0;
+    i = -1;
 	if (format == 0)
 		return (0);
-//initialize the arg list
 	va_start(arg_list, format);
-//no need to get the next arg for now, just iterate the 1st str
-//to print it + the other args (if there)
-//where to check if the arg_list is empty or not corresponding type??!!
-/*ft_printf.c:214:32: error: more '%' conversions than data arguments [-Werror,-Wformat]
-        printf("to be:Something like %X\n");*/
-	while (format[i] != 0)
+	while (format[++i] != 0)
 	{
-//allocate memory for this ptr storing one char?
 		if (format[i] == '%')
 		{
-			type_ptr = ft_strchr("cspdiuxX%", format[i + 1]);
+			type_ptr = ft_strchr("cspdiuxX%", format[i++ + 1]);
 			if (type_ptr == 0)
 				return (0);
 			len += type_print(type_ptr, arg_list);
-			i++;
 		}
 		else
 			len += write(1, &format[i], 1);
-		i++;
 	}
 	va_end(arg_list);
 	return (len);
 }
-//Man says: If arg_list is passed to a function that uses va_arg(arg_list,type),
-//then the value of arg_list is undefined after the return of that function!!!
-//use va_copy to avoid undefined values??!
 
 int	type_print(const char *c, va_list arg_list)
 {
 	int		len;
 	char	*converted;
-//va_arg dereferences the ptr-->to get access to the value inside
-//of the variable it points to, and advances the pointer automatically
-//each time we call it to skip past that argument. How? no idea
-//as arg we give the list of args in which to iterate and the type we
-//want it to return??
+
 	len = 0;
 	if (arg_list == 0)
 		return (0);
@@ -82,21 +67,23 @@ int	type_print(const char *c, va_list arg_list)
 		len = putchar_printf(va_arg(arg_list, int));
 	if (*c == 's')
 		len = putstr_printf(va_arg(arg_list, char *));
-//d takes as much space as needed
-//with printf both can be printed the same way, but with scanf they
-//have to be treated different
 	if (*c == 'd' || *c == 'i')
 		len = putnbr_printf(va_arg(arg_list, int), c);
 	if (*c == 'u')
 		len = putnbr_printf(va_arg(arg_list, unsigned int), c);
 	if (*c == 'x' || *c == 'X')
 	{
-		converted = convert(va_arg(arg_list, unsigned int), 16, c);
+		converted = hex_convert(va_arg(arg_list, unsigned int), 16, c);
 		len = putstr_printf(converted);
+
 	}
-/*	if (c == 'p')
+	if (*c == 'p')
 	{
-	}*/
+		converted = convert_address(va_arg(arg_list, size_t), 16);
+		len = putstr_printf(converted);
+
+	}
+	
 	return (len);
 }
 
@@ -105,7 +92,7 @@ char	*ft_strchr(const char *s, int c)
 	int	i;
 
 	i = 0;
-	while (s[i] != '\0')
+	while (s[i] != 0)
 	{
 		if (s[i] == (char)c)
 			return ((char *)&s[i]);
@@ -131,6 +118,8 @@ int	putstr_printf(char *s)
 
 	i = 0;
 	len = 0;
+	if (s[i] == 0)
+		len += write (1, &s[i], 1);
 	while (s[i] != 0)
 	{
 		len += write (1, &s[i], 1);
@@ -156,45 +145,82 @@ int	putnbr_printf(int n, const char *c)
 		}
 		if (n > 9)
 			putnbr_printf(n / 10, c);
-		putme = n % 10 + '0';
+		putme = n % 10 + 48;
 		len += write(1, &putme, 1);
 	}
 	return (len);
 }
 
-char* convert(unsigned num, int base, const char *c)
+char* hex_convert(unsigned num, int base, const char *c)
 {
 	char	str[] = "0123456789ABCDEF";
 	char	*ptr;
 	int		temp;
 	int		i;
+	int		j;
 
-	temp = num;
+	j = 0;
 	i = 0;
-	if (temp == 0)
-		i = 1;
+	temp = num;
 	while (temp != 0)
 	{
 		i++;
 		temp /= base;
 	}
-	ptr = (char *)malloc(sizeof(char) * i + 1);
-	ptr[i + 1] = '\0';
-	if (ptr == 0)
+	if (temp == 0)
+		j = 1;
+	if (!(ptr = (char *)malloc(sizeof(char) * (i + j) + 1)))
 		return (0);
-	while (num != 0)
+	if (num == 0)
 	{
-		ptr[i - 1]= str[num % base];
-		num /= base;
-		i--;
+		ptr[j] = 0;
+		ptr[j-1] = num + 48;
 	}
-	printf("what is in here?: %c", ptr[i]);
+	if (num != 0)
+	{
+		ptr[i] = 0;
+		while (i >= 0)
+		{
+			ptr[i - 1]= str[num % base];
+			num /= base;
+			i--;
+		}
+	}
 	if (*c == 'x')
-		ptr = hex_tolower(ptr);
+		ptr = tolower_printf(ptr);
 	return (ptr);
 }
 
-char *hex_tolower(char *s)
+char* convert_address(size_t num, int base)
+{
+	char	str[] = "0123456789abcdef";
+	char	*ptr;
+	size_t		temp;
+	int		i;
+
+	i = 2;
+	temp = num;
+	while (temp != 0)
+	{
+		i++;
+		temp /= base;
+		//printf("%d")
+	}
+	if (!(ptr = (char *)malloc(sizeof(char) * i + 1)))
+		return (0);
+	ptr[i + 1] = 0;
+	ptr[1] = 'x';
+	ptr[0] = '0';
+	while (i > 1)
+	{
+		ptr[i]= str[num % base];
+		num /= base;
+		i--;
+	}
+	return (ptr);
+}
+
+char *tolower_printf(char *s)
 {
     int i;
 
@@ -211,7 +237,17 @@ char *hex_tolower(char *s)
 
 int	main()
 {
-	ft_printf("Something like %X\n", 100);
-	printf("to be:Something like %X\n", 100);
+	int	a = 2;
+	int *p = &a;
+
+	ft_printf("Something like %p\n", &a);
+	ft_printf("Something like %p\n", p);
+	printf("to be:Something like %p\n", &a);
+	printf("to be:Something like %p\n", p);
+	ft_printf("Something like %x\n", 230837698);
+	printf("to be: Something like %x\n", 230837698);
+/*	printf(0);
+	ft_printf(0);*/
 	return (0);
 }
+

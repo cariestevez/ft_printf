@@ -6,7 +6,7 @@
 /*   By: cestevez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/24 23:11:05 by cestevez          #+#    #+#             */
-/*   Updated: 2023/01/25 21:39:43 by cestevez         ###   ########.fr       */
+/*   Updated: 2023/01/26 19:38:00 by cestevez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	print_nbr(int n)
 {
 	int	putme;
-	int	len;
+	int len;
 
 	len = 0;
 	if (n == -2147483648)
@@ -28,7 +28,7 @@ int	print_nbr(int n)
 			len += write (1, "-", 1);
 		}
 		if (n > 9)
-			print_nbr(n / 10);
+			len += print_nbr(n / 10);
 		putme = n % 10 + '0';
 		len += write(1, &putme, 1);
 	}

@@ -6,7 +6,7 @@
 /*   By: cestevez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 12:24:01 by cestevez          #+#    #+#             */
-/*   Updated: 2023/01/25 21:52:26 by cestevez         ###   ########.fr       */
+/*   Updated: 2023/01/26 19:49:37 by cestevez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,10 @@ int	type_print(const char c, va_list arg_list)
 		return (-1);
 }
 
-/*int	main()
+int	main()
 {
-	int	a = 2;
+	int a;
+/*	int	a = 2;
 	int *p = &a;
 	ft_printf("Something like %%\n");
 	printf("to be:Something like %%\n");
@@ -82,10 +83,15 @@ int	type_print(const char c, va_list arg_list)
 	ft_printf("Something like %x\n", 230837698);
 	printf("to be: Something like %x\n", 230837698);
 	printf(0);
-	ft_printf(0);
-	ft_printf("Something like %u\n", -4294967294);
-	printf("to be: Something like %u\n", -4294967294);
-	ft_printf("Something like %i\n", 2147483648);
-	printf("to be: Something like %i\n", 2147483648);
+	ft_printf(0);*/
+	a = ft_printf("Something like %u\n", 967294);
+	printf("to be: Something like %u\n", 967294);
+	printf("a = %i\n", a);
+	a = ft_printf("Something like %i\n", 147483648);
+	printf("to be: Something like %i\n", 147483648);
+	printf("a = %i\n", a);
+	a = ft_printf("Something like %d\n", 10);
+	printf("to be: Something like %d\n", 10);
+	printf("a = %i\n", a);
 	return (0);
-}*/
+}

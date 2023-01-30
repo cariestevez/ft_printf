@@ -19,11 +19,10 @@
 int		ft_printf(const char *format, ...);
 char	*ft_strchr(const char *s, int c);
 int		print_char(char c);
-int		print_string(char *s);
+int		print_string(char *s, const char c);
 int		print_nbr(int n);
 int		print_unsigned(unsigned int n);
 char	*print_hex(unsigned int num, const char c);
-char	*hex_ptr(char *ptr, int i, int j, unsigned int num);
 char	*toupper_printf(char *s);
 char	*print_address(size_t num);
 

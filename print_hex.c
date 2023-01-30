@@ -6,11 +6,13 @@
 /*   By: cestevez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/24 23:10:50 by cestevez          #+#    #+#             */
-/*   Updated: 2023/01/25 20:11:00 by cestevez         ###   ########.fr       */
+/*   Updated: 2023/01/31 00:42:15 by cestevez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
+
+char	*hex_ptr(char *ptr, int i, int j, unsigned int num);
 
 char	*print_hex(unsigned int num, const char c)
 {
@@ -35,5 +37,28 @@ char	*print_hex(unsigned int num, const char c)
 	ptr = hex_ptr(ptr, i, j, num);
 	if (c == 'X')
 		ptr = toupper_printf(ptr);
+	return (ptr);
+}
+
+char	*hex_ptr(char *ptr, int i, int j, unsigned int num)
+{
+	char	*str;
+
+	str = "0123456789abcdef";
+	if (num == 0)
+	{
+		ptr[j] = 0;
+		ptr[j - 1] = num + 48;
+	}
+	if (num != 0)
+	{
+		ptr[i] = 0;
+		while (i > 0)
+		{
+			ptr[i - 1] = str[num % 16];
+			num /= 16;
+			i--;
+		}
+	}
 	return (ptr);
 }

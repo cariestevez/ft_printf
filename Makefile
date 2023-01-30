@@ -2,8 +2,7 @@ NAME = libftprintf.a
 
 SOURCES = \
 	ft_printf.c ft_strchr.c print_char.c print_string.c print_nbr.c \
-	print_unsigned.c print_hex.c hex_ptr.c toupper_printf.c \
-	print_address.c \
+	print_unsigned.c print_hex.c toupper_printf.c print_address.c \
 
 OBJECTS = $(SOURCES:.c=.o)
 
@@ -14,7 +13,7 @@ CFLAGS = -Wall -Wextra -Werror
 all: $(NAME)
 
 $(NAME): $(OBJECTS)
-	$(AR) -r $@ $?
+	ar rc $(NAME) $(OBJECTS)
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $?

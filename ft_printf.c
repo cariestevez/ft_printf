@@ -23,6 +23,8 @@ int	ft_printf(const char *format, ...)
 	len = 0;
 	i = 0;
 	va_start(arg_list, format);
+	if (format == 0)
+		return (-1);
 	while (format[i] != 0)
 	{
 		if (format[i] == '%')
@@ -61,40 +63,3 @@ int	type_print(const char c, va_list arg_list)
 	else
 		return (-1);
 }
-
-// int	main()
-// {
-// 	// int a;
-// 	// int	a = 2;
-// 	// int *p = &a;
-// 	// ft_printf("Something like %%\n");
-// 	// printf("to be:Something like %%\n");
-// 	// ft_printf("Something like %p\n", &a);
-// 	// printf("Something like %p\n", &a);
-// 	// ft_printf("Something like %p\n", p);
-// 	// printf("Something like %p\n", p);
-// 	// ft_printf("Something like %x\n", 230837698);
-// 	// printf("to be: Something like %x\n", 230837698);
-// 	// printf(0);
-// 	// ft_printf(0);
-// 	// a = ft_printf("Something like %u\n", 967294);
-// 	// printf("to be: Something like %u\n", 967294);
-// 	// printf("a = %i\n", a);
-// 	// a = ft_printf("Something like %i\n", 147483648);
-// 	// printf("to be: Something like %i\n", 147483648);
-// 	// printf("a = %i\n", a);
-// 	// a = ft_printf("Something like %d\n", 10);
-// 	// printf("to be: Something like %d\n", 10);
-// 	// printf("a = %i\n", a);
-// 	// printf(" %s %s %s %s %s ", " - ", "", "4", "", "2 ");
-// 	// printf("\n");
-// 	// ft_printf(" %s %s %s %s %s ", " - ", "", "4", "", "2 ");
-// 	// printf("\n");
-// 	// printf(" NULL %s NULL ", NULL);
-// 	// printf("\n");
-// 	// ft_printf(" NULL %s NULL ", NULL);
-// 	// printf(" %p %p ", 0, 0);
-// 	// printf("\n");
-// 	ft_printf(" hello %p ", 1);
-// 	return (0);
-// }

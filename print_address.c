@@ -12,7 +12,7 @@
 
 #include "ft_printf.h"
 
-int	count_places(size_t temp);
+int	count_digits(size_t temp);
 
 char	*print_address(size_t num)
 {
@@ -21,7 +21,7 @@ char	*print_address(size_t num)
 	int		i;
 
 	str = "0123456789abcdef";
-	i = 2 + count_places(num);
+	i = 2 + count_digits(num);
 	if (num == 0)
 		return (0);
 	ptr = (char *)malloc((sizeof(char)) * i + 1);
@@ -38,7 +38,7 @@ char	*print_address(size_t num)
 	return (ptr);
 }
 
-int	count_places(size_t temp)
+int	count_digits(size_t temp)
 {
 	int	i;
 
